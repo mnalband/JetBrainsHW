@@ -1,0 +1,61 @@
+     TC001 - Authorization with username and password / positive scenario
+
+Description: User is able to authorize with username and password credentials to TeamCity.
+
+Validation input:
+{
+  username : admin,
+  password: admin,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+  is_any_project_setup_in_teamcity: no
+}
+
+Feature: User Authorization
+
+Method: Automated
+
+Test Cases Steps:
+* Open browser and navigate to https://awesomepipeline.teamcity.com/
+  ** User is redirected to https://awesomepipeline.teamcity.com/login.html
+* On page find `continue with username/password`. Click on it.
+  ** Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
+* Input validation data (username and password) into 'Username' and 'Password' fields. Click on 'Log in'.
+
+Expected Result: User is redirected to https://awesomepipeline.teamcity.com/favorite/projects.
+User is able to see 'Welcome to TeamCity' section. 'Create project...' is also available.
+
+========================================================================================================================
+
+TC002 - Authorization with username and incorrect password / negative scenario
+
+Description: User is not able to authorize with incorrect username and password credentials to TeamCity.
+
+Validation input:
+{
+  username : admin,
+  password: admin123,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+  is_any_project_setup_in_teamcity: no
+}
+
+Feature: User Authorization
+
+Method: Manual
+
+Test Cases Steps:
+* Open browser and navigate to https://awesomepipeline.teamcity.com/
+  ** User is redirected to https://awesomepipeline.teamcity.com/login.html
+* On page find `continue with username/password`. Click on it.
+  ** Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
+* Input validation data (username and password) into 'Username' and 'Password' fields. Click on 'Log in'.
+
+Expected Result: Error message appears 'Incorrect username or password.' on login page.
+User is  not redirected to https://awesomepipeline.teamcity.com/favorite/projects.
+
+========================================================================================================================
+
+TC003
