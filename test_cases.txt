@@ -1,4 +1,4 @@
-     TC001 - Authorization with username and password / positive scenario
+TC001 - Authorization with username and password / positive scenario
 
 Description: User is able to authorize with username and password credentials to TeamCity.
 
@@ -16,7 +16,7 @@ Feature: User Authorization
 
 Method: Automated
 
-Test Cases Steps:
+Test Case Steps:
 * Open browser and navigate to https://awesomepipeline.teamcity.com/
   ** User is redirected to https://awesomepipeline.teamcity.com/login.html
 * On page find `continue with username/password`. Click on it.
@@ -25,6 +25,8 @@ Test Cases Steps:
 
 Expected Result: User is redirected to https://awesomepipeline.teamcity.com/favorite/projects.
 User is able to see 'Welcome to TeamCity' section. 'Create project...' is also available.
+
+Cleanup:
 
 ========================================================================================================================
 
@@ -46,7 +48,7 @@ Feature: User Authorization
 
 Method: Manual
 
-Test Cases Steps:
+Test Case Steps:
 * Open browser and navigate to https://awesomepipeline.teamcity.com/
   ** User is redirected to https://awesomepipeline.teamcity.com/login.html
 * On page find `continue with username/password`. Click on it.
@@ -56,6 +58,143 @@ Test Cases Steps:
 Expected Result: Error message appears 'Incorrect username or password.' on login page.
 User is  not redirected to https://awesomepipeline.teamcity.com/favorite/projects.
 
+Cleanup:
+
 ========================================================================================================================
 
-TC003
+TC003 - Create a project from a repository URL / positive scenario
+
+Description: User is able to create a project via the TeamCity.
+
+Validation input:
+{
+  username : admin,
+  password: admin,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+  repository_url: https://github.com/JetBrains/teamcity-test-data
+}
+
+Before test: User should be logged in.
+
+Feature: Project Creation
+
+Method: Automated
+
+Test Case Steps:
+* Open home page. Find 'Create project...' button. Click on it.
+  ** User is redirected to 'Create Project' page.
+  ** Options to create a project from:
+     - from a repository URL
+     - from GitHub.com
+     - from Bitbucket Cloud
+     - from GitLab
+     - Manually
+  ** Parent project should be <Root project>
+  ** Repository URL, Username and Password / access token are available
+  ** Proceed button is enabled
+* In Repository URL put $repository_url. Click on 'Proceed' btn.
+Expected result: '✓ The connection to the VCS repository has been verified' message appeared.
+* Now click on 'Proceed'
+Expected result: 'The project settings have been successfully loaded from the VCS repository.'
+* verify on main page 'Projects' selection
+Expected result: 'Teamcity Test Data' is present in the list
+
+Cleanup:
+
+========================================================================================================================
+
+TC004 - Run the first custom build
+
+Description: User is able to run a custom build for 'Teamcity Test Data' project.
+
+Validation input:
+{
+  username : admin,
+  password: admin,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+}
+
+Before test / set up: User should be logged in and 'Teamcity Test Data' project is available.
+
+Feature: Run Pipeline
+
+Method: Automated
+
+Test Case Steps:
+* Open Teamcity server. Go to 'Projects'. Find 'Teamcity Test Data' project. Find 'Run' btn. Click on it.
+Expected result:  build number should be #1.
+'1 build found'.
+
+Cleanup:
+
+========================================================================================================================
+
+TC005 - Run a build when the project was already built
+
+Description: User is able to run a custom build for 'Teamcity Test Data' project, when there is already a build.
+
+Validation input:
+{
+  username : admin,
+  password: admin,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+}
+
+Before test / set up: User should be logged in and 'Teamcity Test Data' project is available. Some builds already should
+exist in the project.
+
+Feature: Run Pipeline
+
+Method: Manual
+
+Test Case Steps:
+* Open Teamcity server. Go to 'Projects'. Find 'Teamcity Test Data' project. Find 'Run' btn. Click on it.
+Expected result:  build number should be #2.
+* Wait about 5min to finish the job.
+Expected result: `Tests failed: 3000 (3000 new), passed: 7011`
+
+Cleanup:
+
+========================================================================================================================
+
+TC006 - Build Queue
+
+Description: The build queue is a list of builds that were triggered and are waiting to be started.
+
+Validation input:
+{
+  username : admin,
+  password: admin,
+  URL: https://awesomepipeline.teamcity.com/,
+  browser: chromium, firefox
+  teamcity build: 2021.2 (build 99591),
+}
+
+Before test / set up: User should be logged in and 'Teamcity Test Data' project is available. Some builds already should
+exist in the project.
+
+Feature: Build Queue
+
+Method: Manual
+
+Test Case Steps:
+
+* Open Teamcity server. Go to 'Queue'.
+  ** You should assert 'Build queue is empty'
+* Go to 'Projects'. Find 'Teamcity Test Data' project. Find 'Run' btn. Click on it. Then go to 'Queue'
+  Expected result:
+ `#1 Should start shortly: Waiting for starting agent`. In a while the queue #1 will disappear. Check in 'Projects'
+ that build has been started and running.
+
+Cleanup:
+
+
+
+
+
