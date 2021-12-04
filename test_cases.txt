@@ -18,15 +18,13 @@ Method: Automated
 
 Test Case Steps:
 * Open browser and navigate to https://awesomepipeline.teamcity.com/
-  ** User is redirected to https://awesomepipeline.teamcity.com/login.html
+  * User is redirected to https://awesomepipeline.teamcity.com/login.html
 * On page find `continue with username/password`. Click on it.
-  ** Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
-* Input validation data (username and password) into 'Username' and 'Password' fields. Click on 'Log in'.
+  * Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
+* Input username and password into 'Username' and 'Password' fields. Click on 'Log in'.
 
 Expected Result: User is redirected to https://awesomepipeline.teamcity.com/favorite/projects.
 User is able to see 'Welcome to TeamCity' section. 'Create project...' is also available.
-
-Cleanup:
 
 ========================================================================================================================
 
@@ -50,15 +48,13 @@ Method: Manual
 
 Test Case Steps:
 * Open browser and navigate to https://awesomepipeline.teamcity.com/
-  ** User is redirected to https://awesomepipeline.teamcity.com/login.html
+  * User is redirected to https://awesomepipeline.teamcity.com/login.html
 * On page find `continue with username/password`. Click on it.
-  ** Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
+  * Login form is present. Fields 'Username', 'Password' and button 'Log in' are present.
 * Input validation data (username and password) into 'Username' and 'Password' fields. Click on 'Log in'.
 
 Expected Result: Error message appears 'Incorrect username or password.' on login page.
 User is  not redirected to https://awesomepipeline.teamcity.com/favorite/projects.
-
-Cleanup:
 
 ========================================================================================================================
 
@@ -73,7 +69,7 @@ Validation input:
   URL: https://awesomepipeline.teamcity.com/,
   browser: chromium, firefox
   teamcity build: 2021.2 (build 99591),
-  repository_url: https://github.com/JetBrains/teamcity-test-data
+  repository_url: https://github.com/gradle/gradle-site-plugin.git
 }
 
 Before test: User should be logged in.
@@ -84,28 +80,26 @@ Method: Automated
 
 Test Case Steps:
 * Open home page. Find 'Create project...' button. Click on it.
-  ** User is redirected to 'Create Project' page.
-  ** Options to create a project from:
+  * User is redirected to 'Create Project' page.
+  * Options to create a project from:
      - from a repository URL
      - from GitHub.com
      - from Bitbucket Cloud
      - from GitLab
      - Manually
-  ** Parent project should be <Root project>
-  ** Repository URL, Username and Password / access token are available
-  ** Proceed button is enabled
+  * Parent project should be <Root project>
+  * Repository URL, Username and Password / access token are available
+  * Proceed button is enabled
 * In Repository URL put $repository_url. Click on 'Proceed' btn.
 Expected result: '✓ The connection to the VCS repository has been verified' message appeared.
 * Now click on 'Proceed'
 Expected result: 'The project settings have been successfully loaded from the VCS repository.'
-* verify on main page 'Projects' selection
-Expected result: 'Teamcity Test Data' is present in the list
-
-Cleanup:
+* Verify on main page 'Projects' selection
+Expected result: 'Gradle Site Plugin' is present in the list of projects
 
 ========================================================================================================================
 
-TC004 - Run the first custom build
+TC004 - Run the first custom build / positive scenario
 
 Description: User is able to run a custom build for 'Teamcity Test Data' project.
 
@@ -125,17 +119,15 @@ Feature: Run Pipeline
 Method: Automated
 
 Test Case Steps:
-* Open Teamcity server. Go to 'Projects'. Find 'Teamcity Test Data' project. Find 'Run' btn. Click on it.
+* Open Teamcity server. Go to 'Projects'. Find 'Gradle Site Plugin' project. Find 'Run' btn. Click on it.
 Expected result:  build number should be #1.
-'1 build found'.
-
-Cleanup:
+Result of the build - 'Success'
 
 ========================================================================================================================
 
-TC005 - Run a build when the project was already built
+TC005 - Run the custom build / negative scenario
 
-Description: User is able to run a custom build for 'Teamcity Test Data' project, when there is already a build.
+Description: User runs build which is expected to fail
 
 Validation input:
 {
@@ -144,10 +136,10 @@ Validation input:
   URL: https://awesomepipeline.teamcity.com/,
   browser: chromium, firefox
   teamcity build: 2021.2 (build 99591),
+  repository_url: https://github.com/JetBrains/teamcity-test-data.git
 }
 
-Before test / set up: User should be logged in and 'Teamcity Test Data' project is available. Some builds already should
-exist in the project.
+Before test / set up: User should be logged in and 'Teamcity Test Data' project is available.
 
 Feature: Run Pipeline
 
@@ -155,11 +147,8 @@ Method: Manual
 
 Test Case Steps:
 * Open Teamcity server. Go to 'Projects'. Find 'Teamcity Test Data' project. Find 'Run' btn. Click on it.
-Expected result:  build number should be #2.
 * Wait about 5min to finish the job.
 Expected result: `Tests failed: 3000 (3000 new), passed: 7011`
-
-Cleanup:
 
 ========================================================================================================================
 
@@ -191,10 +180,3 @@ Test Case Steps:
   Expected result:
  `#1 Should start shortly: Waiting for starting agent`. In a while the queue #1 will disappear. Check in 'Projects'
  that build has been started and running.
-
-Cleanup:
-
-
-
-
-
