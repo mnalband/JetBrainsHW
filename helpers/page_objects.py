@@ -24,7 +24,8 @@ class PageObject:
 
 
 class MainPage(PageObject):
-    pass
+    def open_projects(self):
+        self.page.click('[title="Projects"]')
 
 
 class LoginPage(PageObject):
@@ -52,8 +53,31 @@ class FavoriteProjectsPage(PageObject):
         super().__init__(*args, **kwargs)
         self.URL = f"{self.URL}/favorite/projects"
 
-    def get_create_project(self) -> LocatorType:
+    def get_create_project_button(self) -> LocatorType:
         return self.get_locator('.FavoriteProjectsPage__links-container--xd .ring-button-primary')
 
-    def create_project(self) -> None:
-        self.get_create_project().click()
+    def open_create_project(self) -> None:
+        self.get_create_project_button().click()
+
+
+class AdminPage(PageObject):
+
+    def proceed(self):
+        self.page.click('[value="Proceed"]')
+
+    def get_connections_list(self) -> LocatorType:
+        return self.get_locator('.menuList.menuList_create')
+
+    def add_project_from_url(self, url: str):
+        self.page.fill('[id="url"]', url)
+        self.proceed()
+
+    def get_connection_status(self) -> LocatorType:
+        return self.get_locator('.connectionSuccessful')
+
+    def get_project_create_notification(self) -> LocatorType:
+        return self.get_locator('[id="unprocessed_objectsCreated"]')
+
+    def check_data_before_proceed(self):
+        return self.get_locator("#projectName") and self.get_locator("#buildTypeName") and \
+               self.get_locator("#teamcity:branchSpec")

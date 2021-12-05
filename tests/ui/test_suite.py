@@ -3,8 +3,8 @@ from typing import Generator
 import pytest
 from playwright.sync_api import sync_playwright, Page
 
-from helpers.page_objects import MainPage, LoginPage, FavoriteProjectsPage
-
+from helpers.page_objects import MainPage, LoginPage, FavoriteProjectsPage, AdminPage
+from tests.api.test_suite import get_client as client
 
 @pytest.fixture(name="page")
 def get_new_page() -> Generator[Page, None, None]:
@@ -25,6 +25,13 @@ def login(page) -> None:
 
 @pytest.mark.parametrize("username,password", [("admin", "admin"), ])
 def test_login(page, username, password):
+    """ TC001 - Authorization with username and password / positive scenario
+     User is able to authorize with username and password credentials to TeamCity.
+
+     Expected Result: User is redirected to https://awesomepipeline.teamcity.com/favorite/projects.
+     User is able to see 'Welcome to TeamCity' section. 'Create project...' is also available.
+    """
+
     main_page = MainPage(page)
     main_page.navigate()
 
@@ -38,35 +45,49 @@ def test_login(page, username, password):
 
     favorite_projects_page = FavoriteProjectsPage(page)
     page.wait_for_url(favorite_projects_page.URL)
-    assert favorite_projects_page.get_create_project().inner_text() == 'Create project...'
+    assert favorite_projects_page.get_create_project_button().inner_text() == 'Create project...'
 
 
 def test_add_project(page, login):
+    """ TC003 - Create a project from a repository URL / positive scenario
+     Expected result: 'Gradle Site Plugin' is present in the list of projects
+    """
     favorite_projects_page = FavoriteProjectsPage(page)
-    favorite_projects_page.create_project()
-    page.wait_for_selector('.menuList.menuList_create')
-    menu_list = page.inner_text('.menuList.menuList_create')
-    list1 = 'From a repository URL\n From GitHub.com\n From Bitbucket Cloud\n From GitLab.com\n Manually'
-    assert menu_list == list1
-    # TODO:  Add assertion to check that Parent Root is <Root project>
-    # assert page.inner_text('.runnerFormTable')
-    page.fill('[id="url"]', 'https://github.com/gradle/gradle-site-plugin.git')
-    page.click('[value="Proceed"]')
-    assert page.wait_for_selector('.connectionSuccessful')
-    assert page.text_content('.connectionSuccessful') == '\n    ✓\n    The connection to the VCS repository has been ' \
-                                                         'verified\n  '
-    page.click('[value="Proceed"]')
-    assert page.wait_for_selector('[id="unprocessed_objectsCreated"]')
-    assert page.text_content('[id="unprocessed_objectsCreated"]') == 'New project "Gradle Site Plugin", build ' \
-                                                                     'configuration "Build" and VCS root ' \
-                                                                     '"https://github.com/gradle/gradle-site-plugin' \
-                                                                     '.git#refs/heads/master" have been successfully ' \
-                                                                     'created.'
-    page.click('[title="Projects"]')
-    assert page.wait_for_selector('[id="https://awesomepipeline.teamcity.com_all_project_GradleSitePlugin"]')
+    favorite_projects_page.open_create_project()
+    admin_page = AdminPage(page)
+    connections_list = admin_page.get_connections_list()
+    assert connections_list.inner_text() == ('From a repository URL\n From GitHub.com\n From Bitbucket Cloud\n'
+                                             ' From GitLab.com\n Manually')
+    admin_page.add_project_from_url("https://github.com/gradle/gradle-site-plugin.git")
+    connection_status = admin_page.get_connection_status()
+    assert connection_status.text_content() == '\n    ✓\n    The connection to the VCS repository has been verified\n  '
+
+# TODO: check this asserts. Needs modifications
+    check_data = admin_page.check_data_before_proceed()
+    assert check_data.text_content() == "Gradle Site Plugin"
+    assert check_data.text_content("#buildTypeName") == "Build"
+    assert check_data.text_content("#branch") == "refs/heads/master"
+
+    admin_page.proceed()
+
+    notification = admin_page.get_project_create_notification()
+    assert notification.text_content() == ('New project "Gradle Site Plugin", build configuration "Build" and VCS root'
+                                           ' "https://github.com/gradle/gradle-site-plugin.git#refs/heads/master"'
+                                           ' have been successfully created.')
+    main_page = MainPage(page)
+    main_page.open_projects()
+    page.wait_for_selector('[id="https://awesomepipeline.teamcity.com_all_project_GradleSitePlugin"]')
 
 
 def test_run_first_build(page, login):
+    """ TC004 - Run the first custom build / positive scenario
+    Expected result:  build number should be #1.
+    Result of the build - 'Success'
+    """
+    # Delete project
+    # TODO: Add delete and create project in nicer way
+    client.delete("/app/rest/projects/gradle_site_plugin")
+    # TODO: Add project adding via API here
     page.click('[title="Gradle Site Plugin"]')
     page.click('[data-test="run-build"]')
     assert page.wait_for_selector('[title="Build number: 1"]') and page.wait_for_selector('[aria-label="Success"]')
