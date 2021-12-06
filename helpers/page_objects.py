@@ -3,7 +3,6 @@ from typing import Union, Optional, Dict
 from playwright.sync_api import Page as SyncPage, Response as SyncResponse, Locator as SyncLocator
 from playwright.async_api import Page as AsyncPage, Response as AsyncResponse, Locator as AsyncLocator
 
-
 PageType = Union[SyncPage, AsyncPage]
 ResponseType = Union[SyncResponse, AsyncResponse]
 LocatorType = Union[SyncLocator, AsyncLocator]
@@ -82,5 +81,5 @@ class AdminPage(PageObject):
         return {
             "name": self.get_locator("#projectName"),
             "build_type": self.get_locator("#buildTypeName"),
-            "branch_spec": self.get_locator("#teamcity\:branchSpec"),
+            "branch_spec": self.get_locator(r"#teamcity\:branchSpec"),
         }
