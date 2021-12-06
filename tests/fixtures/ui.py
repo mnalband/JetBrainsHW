@@ -9,7 +9,7 @@ from helpers.page_objects import MainPage, LoginPage
 @pytest.fixture(name="page")
 def get_new_page() -> Generator[Page, None, None]:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch()
         page = browser.new_page()
         yield page
         browser.close()
