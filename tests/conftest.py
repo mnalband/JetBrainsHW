@@ -1,2 +1,2 @@
-from fixtures.api import *
-from fixtures.ui import *
+from .fixtures.api import *
+from .fixtures.ui import *
