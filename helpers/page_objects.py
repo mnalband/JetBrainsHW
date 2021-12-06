@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Dict
 
 from playwright.sync_api import Page as SyncPage, Response as SyncResponse, Locator as SyncLocator
 from playwright.async_api import Page as AsyncPage, Response as AsyncResponse, Locator as AsyncLocator
@@ -78,6 +78,9 @@ class AdminPage(PageObject):
     def get_project_create_notification(self) -> LocatorType:
         return self.get_locator('[id="unprocessed_objectsCreated"]')
 
-    def check_data_before_proceed(self):
-        return self.get_locator("#projectName") and self.get_locator("#buildTypeName") and \
-               self.get_locator("#teamcity:branchSpec")
+    def get_project_data(self) -> Dict[str, LocatorType]:
+        return {
+            "name": self.get_locator("#projectName"),
+            "build_type": self.get_locator("#buildTypeName"),
+            "branch_spec": self.get_locator("#teamcity\:branchSpec"),
+        }
