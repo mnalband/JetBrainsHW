@@ -14,13 +14,13 @@ In order to run UI tests please install browsers with
 playwright install
 ```
 
-##2. Usage
+## 2. Usage
 Inside the project simply run
 ```bash
 pytest tests
 ```
 
-##3. Test results
+## 3. Test results
 Test results could be found in GH Actions Workflow. Check the latest green build. 
 
 Local run: 
